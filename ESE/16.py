@@ -35,3 +35,75 @@ def minimax(board, depth, is_maximizing):
                     score = minimax(board, depth + 1, False)
                     board[i][j] = ' '
                     best_score = max(score, best_score)
+        return best_score
+    else:
+        best_score = math.inf
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == ' ':
+                    board[i][j] = 'O'
+                    score = minimax(board, depth + 1, True)
+                    board[i][j] = ' '
+                    best_score = min(score, best_score)
+        return best_score
+
+def worst_move(board):
+    worst_score = math.inf
+    move = None
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == ' ':
+                board[i][j] = 'O'
+                score = minimax(board, 0, True)
+                board[i][j] = ' '
+                if score < worst_score:
+                    worst_score = score
+                    move = (i, j)
+    return move
+
+def play_game():
+    board = [[' ' for _ in range(3)] for _ in range(3)]
+    print("Tic-Tac-Toe (Computer tries to lose)")
+    print_board(board)
+
+    while True:
+        # Player move
+        while True:
+            try:
+                row = int(input("Enter row (0-2): "))
+                col = int(input("Enter column (0-2): "))
+                if board[row][col] == ' ':
+                    board[row][col] = 'X'
+                    break
+                else:
+                    print("Cell already taken. Try again.")
+            except (ValueError, IndexError):
+                print("Invalid input.")
+
+        print_board(board)
+
+        if is_winner(board, 'X'):
+            print("You win!")
+            break
+        if is_full(board):
+            print("Draw!")
+            break
+
+        # Computer move
+        move = worst_move(board)
+        if move:
+            board[move[0]][move[1]] = 'O'
+            print("Computer played:")
+            print_board(board)
+
+            if is_winner(board, 'O'):
+                print("Computer wins!")
+                break
+            if is_full(board):
+                print("Draw!")
+                break
+        else:
+            print("Draw!")
+            break
+
+play_game()
